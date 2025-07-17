@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ public class StatConfigModifier implements PolarisConfigModifier {
 		StatReporterConfigImpl statReporterConfig = configuration.getGlobal().getStatReporter();
 		statReporterConfig.setEnable(polarisStatProperties.isEnabled());
 		PrometheusHandlerConfig prometheusHandlerConfig = statReporterConfig.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
+		prometheusHandlerConfig.setPathRegexList(polarisStatProperties.getPathRegexList());
 		// Set prometheus plugin.
 		if (polarisStatProperties.isEnabled()) {
 			if (polarisStatProperties.isPushGatewayEnabled()) {

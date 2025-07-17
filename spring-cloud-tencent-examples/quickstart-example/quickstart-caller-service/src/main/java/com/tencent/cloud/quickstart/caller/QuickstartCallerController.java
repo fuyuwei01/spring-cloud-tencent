@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -213,5 +214,15 @@ public class QuickstartCallerController {
 	@GetMapping("/healthCheck")
 	public String healthCheck() {
 		return "ok";
+	}
+
+	/**
+	 * health check.
+	 * @return health check info
+	 */
+	@GetMapping("/test/{num}")
+	public String test1(@PathVariable int num) {
+		String path = "http://QuickstartCalleeService/quickstart/callee/test/" + num + "/echo";
+		return restTemplate.getForObject(path, String.class);
 	}
 }

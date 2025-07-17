@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigurationConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -64,6 +65,7 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	public void modify(ConfigurationImpl configuration) {
 		configuration.getGlobal().getAPI().setReportEnable(false);
 		configuration.getGlobal().getStatReporter().setEnable(false);
+		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
 
 		if (!polarisContextProperties.getEnabled() || !polarisConfigProperties.isEnabled()) {
 			return;
@@ -80,11 +82,12 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	}
 
 	private void initDataSource(ConfigurationImpl configuration) {
+		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
 		// set connector type
-		configuration.getConfigFile().getServerConnector().setConnectorType(polarisConfigProperties.getDataSource());
+		connectorConfig.setConnectorType(polarisConfigProperties.getDataSource());
 		if (StringUtils.equalsIgnoreCase(polarisConfigProperties.getDataSource(), LOCAL_FILE_CONNECTOR_TYPE)) {
 			String localFileRootPath = polarisConfigProperties.getLocalFileRootPath();
-			configuration.getConfigFile().getServerConnector().setPersistDir(localFileRootPath);
+			connectorConfig.setPersistDir(localFileRootPath);
 			LOGGER.info("[SCT] Run spring cloud tencent config with local data source. localFileRootPath = {}", localFileRootPath);
 			return;
 		}
@@ -110,12 +113,16 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 			checkAddressAccessible(configAddresses);
 		}
 
-		configuration.getConfigFile().getServerConnector().setAddresses(configAddresses);
+		connectorConfig.setAddresses(configAddresses);
+		connectorConfig.setLbPolicy(polarisContextProperties.getAddressLbPolicy());
+		connectorConfig.setServerSwitchInterval(polarisContextProperties.getServerSwitchInterval());
 
 		if (StringUtils.isNotEmpty(polarisConfigProperties.getToken())) {
-			ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
 			connectorConfig.setToken(polarisConfigProperties.getToken());
 		}
+
+		connectorConfig.setEmptyProtectionEnable(polarisConfigProperties.isEmptyProtectionEnabled());
+		connectorConfig.setEmptyProtectionExpiredInterval(polarisConfigProperties.getEmptyProtectionExpiredInterval());
 
 		LOGGER.info("[SCT] Run spring cloud tencent config in polaris data source.");
 	}

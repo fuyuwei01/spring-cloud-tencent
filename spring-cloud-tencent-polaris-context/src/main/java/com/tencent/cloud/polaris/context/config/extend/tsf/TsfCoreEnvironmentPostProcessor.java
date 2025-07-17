@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.context.config.extend.tsf;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.apache.commons.logging.Log;
 
@@ -64,13 +65,18 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 			// enabled
 			String polarisEnabled = environment.getProperty("spring.cloud.polaris.enabled");
 			if (StringUtils.isBlank(polarisEnabled)) {
-				defaultProperties.put("spring.cloud.polaris.enabled", true);
+				defaultProperties.put("spring.cloud.polaris.enabled", "true");
 			}
 
 			// lossless
 			String polarisAdminPort = environment.getProperty("polaris_admin_port");
 			if (StringUtils.isNotBlank(polarisAdminPort)) {
-				defaultProperties.put("spring.cloud.polaris.lossless.enabled", true);
+				defaultProperties.put("spring.cloud.polaris.lossless.enabled", environment.getProperty("spring.cloud.polaris.lossless.enabled", "true"));
+			}
+
+			String tsfPreferIpv6 = environment.getProperty("tsf_prefer_ipv6");
+			if (StringUtils.isNotBlank(tsfPreferIpv6)) {
+				defaultProperties.put("spring.cloud.polaris.discovery.prefer-ipv6", tsfPreferIpv6);
 			}
 
 			if (TsfContextUtils.isTsfConsulEnabled(environment)) {
@@ -114,16 +120,12 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 
 				// context
 				defaultProperties.put("spring.cloud.polaris.enabled", "true");
-				defaultProperties.put("spring.cloud.polaris.discovery.enabled", "false");
-				defaultProperties.put("spring.cloud.polaris.discovery.register", "false");
-				defaultProperties.put("spring.cloud.consul.enabled", "true");
+				defaultProperties.put("spring.cloud.consul.enabled", environment.getProperty("tsf_consul_enable", "true"));
 				defaultProperties.put("spring.cloud.consul.host", tsfConsulIp);
 				defaultProperties.put("spring.cloud.consul.port", tsfConsulPort);
 				defaultProperties.put("spring.cloud.consul.token", tsfConsulToken);
 
 				// discovery
-				defaultProperties.put("spring.cloud.consul.discovery.enabled", "true");
-				defaultProperties.put("spring.cloud.consul.discovery.register", "true");
 				defaultProperties.put("spring.cloud.consul.discovery.instance-id", tsfInstanceId);
 				defaultProperties.put("spring.cloud.polaris.discovery.instance-id", tsfInstanceId);
 				defaultProperties.put("spring.cloud.polaris.discovery.zero-protection.enabled",
@@ -147,25 +149,33 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 				defaultProperties.put("spring.cloud.polaris.contract.report.enabled", environment.getProperty("tsf.swagger.enabled", "true"));
 				defaultProperties.put("spring.cloud.polaris.contract.name", tsfApplicationId);
 
-				// configuration
-				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
-				defaultProperties.put("spring.cloud.polaris.config.internal-enabled", "false");
-				defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
-				defaultProperties.put("spring.cloud.polaris.config.address", "http://" + tsfConsulIp + ":" + tsfConsulPort);
-				defaultProperties.put("spring.cloud.polaris.config.port", tsfConsulPort);
-				defaultProperties.put("spring.cloud.polaris.config.token", tsfConsulToken);
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].namespace", "config");
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].name", "application");
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[0]", tsfApplicationId + "/" + tsfGroupId + "/");
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[1]", tsfNamespaceId + "/");
-				defaultProperties.put("spring.cloud.polaris.config.refresh-type",
-						environment.getProperty("spring.cloud.polaris.config.refresh-type", "refresh_context"));
+				if (TsfContextUtils.isOnlyTsfConsulEnabled(environment)) {
+					// context
+					defaultProperties.put("spring.cloud.polaris.discovery.enabled", "false");
+					defaultProperties.put("spring.cloud.polaris.discovery.register", "false");
 
-				// router
-				defaultProperties.put("spring.cloud.polaris.router.rule-router.fail-over",
-						environment.getProperty("spring.cloud.polaris.router.rule-router.fail-over", "none"));
-				defaultProperties.put("spring.cloud.polaris.router.namespace-router.enabled",
-						environment.getProperty("spring.cloud.polaris.router.namespace-router.enabled", "true"));
+					// configuration
+					defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
+					defaultProperties.put("spring.cloud.polaris.config.internal-enabled", "false");
+					defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
+					defaultProperties.put("spring.cloud.polaris.config.address", "http://" + tsfConsulIp + ":" + tsfConsulPort);
+					defaultProperties.put("spring.cloud.polaris.config.port", tsfConsulPort);
+					defaultProperties.put("spring.cloud.polaris.config.token", tsfConsulToken);
+					defaultProperties.put("spring.cloud.polaris.config.groups[0].namespace", "config");
+					defaultProperties.put("spring.cloud.polaris.config.groups[0].name", "application");
+					defaultProperties.put("spring.cloud.polaris.config.groups[0].files[0]", tsfApplicationId + "/" + tsfGroupId + "/");
+					defaultProperties.put("spring.cloud.polaris.config.groups[0].files[1]", tsfNamespaceId + "/");
+					defaultProperties.put("spring.cloud.polaris.config.refresh-type",
+							environment.getProperty("spring.cloud.polaris.config.refresh-type", "refresh_context"));
+
+					// router
+					defaultProperties.put("spring.cloud.polaris.router.rule-router.fail-over",
+							environment.getProperty("spring.cloud.polaris.router.rule-router.fail-over", "none"));
+					defaultProperties.put("spring.cloud.polaris.router.namespace-router.enabled",
+							environment.getProperty("spring.cloud.polaris.router.namespace-router.enabled", "true"));
+					defaultProperties.put("spring.cloud.polaris.discovery.all-recover-enabled",
+							environment.getProperty("spring.cloud.polaris.discovery.all-recover-enabled", "false"));
+				}
 			}
 
 			MapPropertySource propertySource = new MapPropertySource("tsf-polaris-properties", defaultProperties);

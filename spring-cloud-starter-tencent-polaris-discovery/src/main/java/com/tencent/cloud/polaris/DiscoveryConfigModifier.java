@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ public class DiscoveryConfigModifier implements PolarisConfigModifier {
 		RecoverRouterConfig recoverRouterConfig = configuration.getConsumer().getServiceRouter()
 				.getPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, RecoverRouterConfig.class);
 		recoverRouterConfig.setExcludeCircuitBreakInstances(false);
+		recoverRouterConfig.setAllRecoverEnable(polarisDiscoveryProperties.getAllRecoverEnabled());
 
 		// Update modified config to source properties
 		configuration.getConsumer().getServiceRouter()
@@ -54,6 +55,8 @@ public class DiscoveryConfigModifier implements PolarisConfigModifier {
 		configuration.getConsumer().getZeroProtection().setEnable(polarisDiscoveryProperties.isZeroProtectionEnabled());
 		configuration.getConsumer().getZeroProtection()
 				.setNeedTestConnectivity(polarisDiscoveryProperties.isZeroProtectionNeedTestConnectivity());
+
+		configuration.getConsumer().getOutlierDetection().setWhen(polarisDiscoveryProperties.getDetect().getWhen());
 	}
 
 	@Override

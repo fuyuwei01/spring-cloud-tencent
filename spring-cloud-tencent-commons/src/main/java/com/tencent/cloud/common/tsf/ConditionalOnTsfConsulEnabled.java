@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.tencent.polaris.api.utils.StringUtils;
-
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Condition that if Polaris enabled.
+ * Condition that if TSF Consul enabled.
  *
  * @author Haotian Zhang
  */
@@ -44,20 +41,7 @@ public @interface ConditionalOnTsfConsulEnabled {
 
 		@Override
 		public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
-			Environment environment = conditionContext.getEnvironment();
-			boolean tsfConsulEnable = false;
-
-			String tsfAppId = environment.getProperty("tsf_app_id");
-			if (StringUtils.isNotBlank(tsfAppId)) {
-				String tsfConsulIp = environment.getProperty("tsf_consul_ip");
-				String tsePolarisAddress = environment.getProperty("polaris_address");
-				if (StringUtils.isBlank(tsePolarisAddress) && StringUtils.isNotBlank(environment.getProperty("spring.cloud.polaris.address"))) {
-					tsePolarisAddress = environment.getProperty("spring.cloud.polaris.address");
-				}
-				tsfConsulEnable = StringUtils.isNotBlank(tsfConsulIp) && StringUtils.isBlank(tsePolarisAddress);
-			}
-
-			return tsfConsulEnable;
+			return TsfContextUtils.isTsfConsulEnabled(conditionContext.getEnvironment());
 		}
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,6 +130,8 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 			log.info("loading config data config file, group:" + resource.getGroupName() + " file: " + resource.getFileName());
 			this.puller.initCustomPolarisConfigFile(compositePropertySource, configFileGroup(resource));
 		}
+		// load tsf default config group
+		this.puller.initTsfConfigGroups(compositePropertySource);
 		if (polarisConfigCustomExtensionLayer != null) {
 			polarisConfigCustomExtensionLayer.executeAfterLocateConfigReturning(compositePropertySource);
 		}

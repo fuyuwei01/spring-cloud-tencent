@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -111,6 +112,21 @@ public class PolarisDiscoveryProperties {
 	 */
 	@Value("${spring.cloud.polaris.discovery.zero-protection.is-need-test-connectivity:false}")
 	private boolean zeroProtectionNeedTestConnectivity = false;
+
+	/**
+	 * if prefer ipv6.
+	 */
+	private Boolean preferIpv6 = false;
+
+	/**
+	 * is all recover enable.
+	 */
+	private Boolean allRecoverEnabled = true;
+
+	/**
+	 * Instance detect.
+	 */
+	private Detect detect = new Detect();
 
 	public String getInstanceId() {
 		return instanceId;
@@ -219,6 +235,22 @@ public class PolarisDiscoveryProperties {
 		this.zeroProtectionNeedTestConnectivity = zeroProtectionNeedTestConnectivity;
 	}
 
+	public Boolean getPreferIpv6() {
+		return preferIpv6;
+	}
+
+	public void setPreferIpv6(Boolean preferIpv6) {
+		this.preferIpv6 = preferIpv6;
+	}
+
+	public Boolean getAllRecoverEnabled() {
+		return allRecoverEnabled;
+	}
+
+	public void setAllRecoverEnabled(Boolean allRecoverEnabled) {
+		this.allRecoverEnabled = allRecoverEnabled;
+	}
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -239,6 +271,14 @@ public class PolarisDiscoveryProperties {
 		this.registerEnabled = registerEnabled;
 	}
 
+	public Detect getDetect() {
+		return detect;
+	}
+
+	public void setDetect(Detect detect) {
+		this.detect = detect;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
@@ -256,6 +296,31 @@ public class PolarisDiscoveryProperties {
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
 				", zeroProtectionEnabled=" + zeroProtectionEnabled +
 				", zeroProtectionNeedTestConnectivity=" + zeroProtectionNeedTestConnectivity +
+				", preferIpv6=" + preferIpv6 +
+				", allRecoverEnabled=" + allRecoverEnabled +
+				", detect=" + detect +
 				'}';
+	}
+
+	public static class Detect {
+		/**
+		 * Enable instance detect or not.
+		 */
+		private OutlierDetectionConfig.When when = OutlierDetectionConfig.When.never;
+
+		public OutlierDetectionConfig.When getWhen() {
+			return when;
+		}
+
+		public void setWhen(OutlierDetectionConfig.When when) {
+			this.when = when;
+		}
+
+		@Override
+		public String toString() {
+			return "Detect{" +
+					"when=" + when +
+					'}';
+		}
 	}
 }

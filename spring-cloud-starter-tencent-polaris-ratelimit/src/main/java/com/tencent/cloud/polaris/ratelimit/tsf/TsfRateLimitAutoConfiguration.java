@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.tsf;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
 import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
 
@@ -32,7 +32,7 @@ import org.springframework.core.env.Environment;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfConsulEnabled
+@ConditionalOnOnlyTsfConsulEnabled
 public class TsfRateLimitAutoConfiguration {
 
 	@Bean

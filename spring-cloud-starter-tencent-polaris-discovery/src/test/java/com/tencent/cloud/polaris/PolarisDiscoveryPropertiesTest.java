@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris;
 
 
+import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 import org.junit.jupiter.api.Test;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -88,6 +89,17 @@ public class PolarisDiscoveryPropertiesTest {
 		polarisDiscoveryProperties.setInstanceId("test-ins-id");
 		assertThat(polarisDiscoveryProperties.getInstanceId()).isEqualTo("test-ins-id");
 
+		polarisDiscoveryProperties.setPreferIpv6(true);
+		assertThat(polarisDiscoveryProperties.getPreferIpv6()).isTrue();
+
+		polarisDiscoveryProperties.setAllRecoverEnabled(false);
+		assertThat(polarisDiscoveryProperties.getAllRecoverEnabled()).isFalse();
+
+		PolarisDiscoveryProperties.Detect detect = new PolarisDiscoveryProperties.Detect();
+		detect.setWhen(OutlierDetectionConfig.When.after_call);
+		polarisDiscoveryProperties.setDetect(detect);
+		assertThat(polarisDiscoveryProperties.getDetect().getWhen()).isEqualTo(OutlierDetectionConfig.When.after_call);
+
 		assertThat(polarisDiscoveryProperties.toString())
 				.isEqualTo("PolarisDiscoveryProperties{"
 						+ "namespace='Test'"
@@ -102,6 +114,9 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", healthCheckUrl='/health'"
 						+ ", serviceListRefreshInterval=1000"
 						+ ", zeroProtectionEnabled=false"
-						+ ", zeroProtectionNeedTestConnectivity=false}");
+						+ ", zeroProtectionNeedTestConnectivity=false"
+						+ ", preferIpv6=true"
+						+ ", allRecoverEnabled=false"
+						+ ", detect=Detect{when=after_call}}");
 	}
 }

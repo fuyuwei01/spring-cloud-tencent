@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.PropertySource;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadGroupPolarisPropertySource;
+import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadPolarisPropertySource;
 
 /**
  * 1. Listen to the Polaris server configuration publishing event 2. Write the changed
@@ -153,7 +156,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					registeredPolarisPropertySets.add(entry.getKey());
 					LOGGER.info("[SCT Config] add polaris config file:{}", entry.getKey());
 					ConfigFileMetadata configFileMetadata = entry.getValue();
-					PolarisPropertySource p = PolarisConfigFileLocator.loadPolarisPropertySource(
+					PolarisPropertySource p = loadPolarisPropertySource(
 							configFileService, configFileMetadata.getNamespace(),
 							configFileMetadata.getFileGroup(), configFileMetadata.getFileName());
 					LOGGER.info("[SCT Config] changed property = {}", p.getSource().keySet());
@@ -194,7 +197,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 					PolarisPropertySource newGroupSource = null;
 					if (isGroupRefresh) {
-						newGroupSource = PolarisConfigFileLocator.loadGroupPolarisPropertySource(configFileService,
+						newGroupSource = loadGroupPolarisPropertySource(configFileService,
 								effectPolarisPropertySource.getNamespace(), effectPolarisPropertySource.getGroup());
 					}
 
@@ -301,7 +304,8 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 				.withClientIp(context.getExtensions().getValueContext().getHost())
 				.withNamespace(polarisPropertySource.getNamespace())
 				.withConfigGroup(polarisPropertySource.getGroup())
-				.withConfigVersion(Optional.ofNullable(configKVFileChangeEvent.getConfigFile()).map(ConfigFile::getName).orElse(null))
+				.withConfigVersion(Optional.ofNullable(configKVFileChangeEvent.getConfigFile()).map(ConfigFile::getName)
+						.orElse(null))
 				.withConfigFileName(polarisPropertySource.getFileName());
 
 		BaseFlow.reportConfigEvent(context.getExtensions(), builder.build());

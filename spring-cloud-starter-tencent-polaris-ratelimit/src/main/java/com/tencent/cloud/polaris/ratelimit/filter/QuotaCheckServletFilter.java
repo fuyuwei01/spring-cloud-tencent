@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				// set flow control to header
 				response.addHeader(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
 				// set trace span
-				RateLimitUtils.reportTrace(assemblyAPI, quotaResponse.getActiveRule().getId().getValue());
+				RateLimitUtils.reportTrace(assemblyAPI, quotaResponse.getActiveRuleId());
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
 					try {
 						String encodedActiveRuleName = URLEncoder.encode(

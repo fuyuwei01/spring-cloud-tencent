@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.config.tsf;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
 import com.tencent.cloud.polaris.config.tsf.controller.PolarisAdaptorTsfConfigController;
 import com.tencent.tsf.consul.config.watch.TsfConsulConfigRefreshEventListener;
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date Jul 23, 2023 3:52:48 PM
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfConsulEnabled
+@ConditionalOnOnlyTsfConsulEnabled
 @ConditionalOnPolarisConfigEnabled
 public class PolarisAdaptorTsfConfigAutoConfiguration {
 

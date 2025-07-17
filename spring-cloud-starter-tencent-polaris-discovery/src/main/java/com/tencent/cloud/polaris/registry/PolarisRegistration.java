@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,6 +235,13 @@ public class PolarisRegistration implements Registration {
 
 	public boolean isRegisterEnabled() {
 		return registerEnabled;
+	}
+
+	public String getNamespace() {
+		if (polarisDiscoveryProperties != null) {
+			return polarisDiscoveryProperties.getNamespace();
+		}
+		return null;
 	}
 
 	public SDKContext getPolarisContext() {
